@@ -12,9 +12,11 @@ class TokenBucketAlgo(object):
 
     def __init__(self, bucket_limit=8, refill_rate=3, interval=5):
         logger.info("Initiating Token bucket technique")
+        
         self.bucket_limit = bucket_limit
         self.refill_rate = refill_rate
         self.interval = interval
+        # Available tokens to consider for algorithm
         self.token = bucket_limit
         self.start_time = time.time()
 
