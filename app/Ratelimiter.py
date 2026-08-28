@@ -2,6 +2,7 @@ import logging
 import pickle
 import os
 from tokenbucket import TokenBucketAlgo
+from leakybucket import LeakyBucketAlgo
 import redis
 from dotenv import load_dotenv
 
@@ -29,3 +30,16 @@ class RateLimiter(object):
 
         redis_client.setex(f"{ip_address}", 3600, pickle.dumps(token_obj))
         return result
+
+    def LeakyBucket(self, ip_address):
+        cached_bucket = redis_client.get(f"{ip_address}")
+        if cached_bucket:
+            token_obj = pickle.loads(cached_bucket)
+        else:
+            token_obj = LeakyBucketAlgo()
+            logger.info(f"New Queue created for {ip_address}")
+
+        result = token_obj.accept_request()
+        redis_client.setex(f"{ip_address}", 3600, pickle.dumps(token_obj))
+        return result
+
